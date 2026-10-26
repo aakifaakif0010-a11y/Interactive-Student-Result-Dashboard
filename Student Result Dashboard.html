@@ -1,0 +1,260 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Result Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        .student-card {
+            background-color: #f8fafc;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #1e3a8a;
+            border-radius: 5px;
+        }
+
+        .student-card h3 {
+            color: #1e3a8a;
+        }
+
+        .result {
+            font-weight: bold;
+            color: #166534;
+        }
+
+        .no-result {
+            text-align: center;
+            color: red;
+            padding: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .search-box {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Student Result Dashboard</h1>
+
+    <div class="container">
+
+        <h2>Search Student</h2>
+
+        <div class="search-box">
+            <input type="text" id="searchInput"
+                   placeholder="Enter student name or ID">
+
+            <button onclick="searchStudent()">Search</button>
+            <button onclick="displayStudents()">Show All</button>
+        </div>
+
+        <h2>Student Records</h2>
+
+        <div id="studentList"></div>
+
+    </div>
+
+    <script>
+        // Store student details using objects inside an array
+        const students = [
+            {
+                id: 101,
+                name: "Aakif",
+                department: "BCA",
+                marks: [90, 85, 80, 75, 95]
+            },
+            {
+                id: 102,
+                name: "Ayesha",
+                department: "BCA",
+                marks: [88, 92, 78, 85, 90]
+            },
+            {
+                id: 103,
+                name: "Arun",
+                department: "BCA",
+                marks: [65, 70, 75, 80, 60]
+            },
+            {
+                id: 104,
+                name: "Priya",
+                department: "BCA",
+                marks: [95, 90, 92, 88, 96]
+            }
+        ];
+
+        // Calculate student result
+        function calculateResult(student) {
+            const total = student.marks.reduce(
+                (sum, mark) => sum + mark, 0
+            );
+
+            const average = total / student.marks.length;
+
+            let grade;
+
+            if (average >= 90) {
+                grade = "A+";
+            } else if (average >= 80) {
+                grade = "A";
+            } else if (average >= 70) {
+                grade = "B";
+            } else if (average >= 60) {
+                grade = "C";
+            } else if (average >= 50) {
+                grade = "D";
+            } else {
+                grade = "F";
+            }
+
+            return {
+                total: total,
+                average: average,
+                grade: grade
+            };
+        }
+
+        // Display student records dynamically
+        function displayStudents(list = students) {
+            const studentList = document.getElementById("studentList");
+
+            studentList.innerHTML = "";
+
+            if (list.length === 0) {
+                studentList.innerHTML =
+                    '<p class="no-result">No student records found.</p>';
+                return;
+            }
+
+            list.forEach(function(student) {
+                const result = calculateResult(student);
+
+                const card = document.createElement("div");
+                card.className = "student-card";
+
+                const heading = document.createElement("h3");
+                heading.textContent = student.name;
+
+                const details = document.createElement("p");
+                details.textContent =
+                    "Student ID: " + student.id +
+                    " | Department: " + student.department;
+
+                const marks = document.createElement("p");
+                marks.textContent =
+                    "Subject Marks: " + student.marks.join(", ");
+
+                const total = document.createElement("p");
+                total.textContent =
+                    "Total Marks: " + result.total + " / " +
+                    (student.marks.length * 100);
+
+                const average = document.createElement("p");
+                average.textContent =
+                    "Average: " + result.average.toFixed(2) + "%";
+
+                const grade = document.createElement("p");
+                grade.className = "result";
+                grade.textContent = "Grade: " + result.grade;
+
+                card.append(
+                    heading,
+                    details,
+                    marks,
+                    total,
+                    average,
+                    grade
+                );
+
+                studentList.appendChild(card);
+            });
+        }
+
+        // Search students by name or ID
+        function searchStudent() {
+            const searchValue = document
+                .getElementById("searchInput")
+                .value.trim()
+                .toLowerCase();
+
+            if (searchValue === "") {
+                displayStudents();
+                return;
+            }
+
+            const filteredStudents = students.filter(function(student) {
+                return student.name.toLowerCase().includes(searchValue) ||
+                       String(student.id).includes(searchValue);
+            });
+
+            displayStudents(filteredStudents);
+        }
+
+        // Display all students when the page opens
+        displayStudents();
+    </script>
+
+</body>
+</html>
+```
